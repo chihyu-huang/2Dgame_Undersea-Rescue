@@ -1,30 +1,33 @@
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.LayoutManager;
-import java.awt.Rectangle;
-import java.awt.TexturePaint;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.*;
 
+import com.sun.tools.javac.Main;
 import util.GameObject;
 
 
 
 public class Viewer extends JPanel {
 	private long CurrentAnimationTime = 0;
+
 	
-	Model gameworld = new Model();
-	 
-	public Viewer(Model World) {
+	static Model gameworld = new Model();
+
+
+	static int numPlayer = gameworld.getNumPlayer();
+
+
+
+
+
+	public Viewer(Model World, int numPlayer) {
 		this.gameworld = World;
+		this.numPlayer = numPlayer;
 		// TODO Auto-generated constructor stub
 	}
 
@@ -56,31 +59,74 @@ public class Viewer extends JPanel {
 
 		CurrentAnimationTime++; // runs animation time step
 //		System.out.println(CurrentAnimationTime);
+
+
+		//Draw background
+		drawBackground(g);
 		
-		//Draw player Game Object 
+		//Draw player Game Object
+
 		int x = (int) gameworld.getPlayer().getCentre().getX();
 		int y = (int) gameworld.getPlayer().getCentre().getY();
 		int width = (int) gameworld.getPlayer().getWidth();
 		int height = (int) gameworld.getPlayer().getHeight();
 		String texture = gameworld.getPlayer().getTexture();
-		
-		//Draw background 
-		drawBackground(g);
-		
+
+		if(gameworld.getNumPlayer() == 2){
+			int x2 = (int) gameworld.getPlayer2().getCentre().getX();
+			int y2 = (int) gameworld.getPlayer2().getCentre().getY();
+			int width2 = (int) gameworld.getPlayer2().getWidth();
+			int height2 = (int) gameworld.getPlayer2().getHeight();
+			String texture2 = gameworld.getPlayer2().getTexture();
+			drawPlayer2(x2, y2, width2, height2, texture2, g);
+			updateScore2(gameworld.getScore2());
+			gameworld.getBullets2().forEach((temp) -> {
+				drawBullet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(),
+						temp.getWidth(), temp.getHeight(), temp.getTexture(), g);
+			});
+
+
+		}
+		updateScore(gameworld.getScore());
+
+		System.out.println(gameworld.getNumPlayer());
+
+
+
+
+//		score1Label.setText("Player 1 score: " + gameworld.getScore());
+
+
+
+
 		//Draw player
-		drawPlayer(x, y, width, height, texture,g);
+		drawPlayer(x, y, width, height, texture, g);
+
+
+
+
 		  
 		//Draw Bullets 
 		// change back 
 		gameworld.getBullets().forEach((temp) -> {
 			drawBullet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(),
 					temp.getWidth(), temp.getHeight(), temp.getTexture(), g);
-		}); 
-		
+		});
+
+
+
 		//Draw Enemies   
 		gameworld.getEnemies().forEach((temp) -> {
 			drawEnemies((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (int) temp.getWidth(), (int) temp.getHeight(), temp.getTexture(), g);
 	    }); 
+	}
+
+	private void updateScore(int score){
+		MainWindow.score1Label.setText("Player 1 score: " + score); //, BorderLayout.NORTH);
+	}
+
+	private void updateScore2(int score){
+		MainWindow.score2Label.setText("Player 2 score: " + score); //, BorderLayout.NORTH);
 	}
 
 	private void drawEnemies(int x, int y, int width, int height, String texture, Graphics g) {
@@ -128,9 +174,22 @@ public class Viewer extends JPanel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private void drawPlayer2(int x, int y, int width, int height, String texture,Graphics g) {
+		File TextureToLoad = new File(texture);  //should work okay on OSX and Linux but check if you have issues depending your eclipse install or if your running this without an IDE
+		try {
+			Image myImage = ImageIO.read(TextureToLoad);
+				int currentPositionInAnimation= ((int) ((CurrentAnimationTime % 12) / 3)) * 24; //slows down animation so every 10 frames we get another frame so every 100ms
+			g.drawImage(myImage, x, y, x+width, y+height, currentPositionInAnimation ,
+					0, currentPositionInAnimation + 23, 20, null);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//g.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer));
-		//Lighnting Png from https://opengameart.org/content/animated-spaceships  its 32x32 thats why I know to increament by 32 each time 
-		// Bullets from https://opengameart.org/forumtopic/tatermands-art 
+		//Lighnting Png from https://opengameart.org/content/animated-spaceships  its 32x32 thats why I know to increament by 32 each time
+		// Bullets from https://opengameart.org/forumtopic/tatermands-art
 		// background image from https://www.needpix.com/photo/download/677346/space-stars-nebula-background-galaxy-universe-free-pictures-free-photos-free-images
 	}
 
@@ -139,12 +198,14 @@ public class Viewer extends JPanel {
 		File TextureToLoad = new File("res/Background.png");  //should work okay on OSX and Linux but check if you have issues depending your eclipse install or if your running this without an IDE
 		try {
 			Image myImage = ImageIO.read(TextureToLoad);
-			g.drawImage(myImage, 0,0, 1164, 764,
-					0 , 0, 1164, 764, null);
+//			g.drawImage(myImage, 0,0, 0, 0, 10 , 10, 0, 0, null);
+			g.drawImage(myImage, 0,0, 1164, 764, 0 , 0, 1164, 764, null);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+
+
 }
 

@@ -23,39 +23,113 @@ public class MainWindow extends JPanel{ //implements Runnable {
 	// title of the game
 	private static JFrame frame = new JFrame("Submarineee");
 	private static Model gameWorld = new Model();
-	private static Viewer canvas = new Viewer(gameWorld);
+	private static Viewer canvas = new Viewer(gameWorld, gameWorld.getNumPlayer());
 	private KeyListener Controller =new Controller()  ;
 	private static int TargetFPS = 100;
 	private static boolean startGame= false;
 	private JLabel BackgroundImageForStartMenu;
+
+	public static JLabel score1Label;
+	public static JLabel score2Label;
+
+	public static JLabel lives1Label;
+	public static JLabel lives2Label;
+
+	final int width = 1164;
+	final int height = 764;
+
+	static int numPlayer;
 	  
 	public MainWindow() {
-		frame.setSize(1164, 764);
+		frame.setSize(width, height);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//If exit // you can modify with your way of quitting , just is a template.
 		frame.setLayout(null);
 		frame.add(canvas);
 
-		canvas.setBounds(0, 0, 1164, 764);
-		canvas.setBackground(new Color(57,126,213));
+		canvas.setBounds(0, 0, width, height);
+//		canvas.setBackground(new Color(57,126,213));
 		canvas.setVisible(false);   // this will become visible after you press the key.
 
 //		startGameThread();
+		JButton player1Button = new JButton("1 Player");
+		JButton player2Button = new JButton("2 Players");
+//		JButton startMenuButton = new JButton("Start Game");  // start button
+//		startMenuButton.addActionListener( new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				startMenuButton.setVisible(true);
+//				BackgroundImageForStartMenu.setVisible(false);
+//				canvas.setVisible(true);
+//				canvas.addKeyListener(Controller);    //adding the controller to the Canvas
+//				canvas.requestFocusInWindow();
+//				// making sure that the Canvas is in focus so keyboard input will be taking in .
+//				startGame = true;
+//
+//
+//				score1Label = new JLabel("Player 1 score: " + gameWorld.getScore());
+//				score1Label.setBounds(width/2 - 100, 0, 200, 100);
+//				canvas.add(score1Label);
+//
+//				score2Label = new JLabel("Player 2 score: " + gameWorld.getScore2());
+//				score2Label.setBounds(width/2 + 100, 0, 200, 100);
+//				canvas.add(score2Label);
+//
+//			}
+//		});
 
-		JButton startMenuButton = new JButton("Start Game");  // start button
-		startMenuButton.addActionListener(new ActionListener() {
+		player1Button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				startMenuButton.setVisible(false);
+				gameWorld.setNumPlayer(1);
+//				canvas.setNumPlayer(1);
+//				numPlayer = 1;
+				player1Button.setVisible(true);
 				BackgroundImageForStartMenu.setVisible(false);
 				canvas.setVisible(true);
 				canvas.addKeyListener(Controller);    //adding the controller to the Canvas
-				canvas.requestFocusInWindow();   // making sure that the Canvas is in focus so keyboard input will be taking in .
+				canvas.requestFocusInWindow();
+				// making sure that the Canvas is in focus so keyboard input will be taking in .
 				startGame = true;
+
+				score1Label = new JLabel("Player 1 score: " + gameWorld.getScore());
+				score1Label.setBounds(width/2 - 100, 0, 200, 100);
+				canvas.add(score1Label);
 			}
 		});
-		startMenuButton.setBounds(0, 0, 200, 40);
-	        
+
+		player2Button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				gameWorld.setNumPlayer(2);
+//				canvas.setNumPlayer(2);
+
+//				numPlayer = 2;
+				player2Button.setVisible(true);
+				BackgroundImageForStartMenu.setVisible(false);
+				canvas.setVisible(true);
+				canvas.addKeyListener(Controller);    //adding the controller to the Canvas
+				canvas.requestFocusInWindow();
+				// making sure that the Canvas is in focus so keyboard input will be taking in .
+				startGame = true;
+
+				score1Label = new JLabel("Player 1 score: " + gameWorld.getScore());
+				score1Label.setBounds(width/2 - 100, 0, 200, 100);
+				canvas.add(score1Label);
+
+				score2Label = new JLabel("Player 2 score: " + gameWorld.getScore2());
+				score2Label.setBounds(width/2 + 100, 0, 200, 100);
+				canvas.add(score2Label);
+			}
+		});
+
+
+//		System.out.println(numPlayer);
+
+//		startMenuButton.setBounds(200, 200, 200, 40);
+		player1Button.setBounds(width/2 - 100, height/2 - 30, 200, 40);
+		player2Button.setBounds(width/2 - 100, height/2 + 30, 200, 40);
+
 		//loading background image
 		File BackroundToLoad = new File("res/startscreen.png");
 //		File BackroundToLoad = new File("res/Background.png");
@@ -63,13 +137,16 @@ public class MainWindow extends JPanel{ //implements Runnable {
 		try {
 			BufferedImage myPicture = ImageIO.read(BackroundToLoad);
 			BackgroundImageForStartMenu = new JLabel(new ImageIcon(myPicture));
-			BackgroundImageForStartMenu.setBounds(0, 0, 1164, 764);
+			BackgroundImageForStartMenu.setBounds(0, 0, 0, 0); //1164, 764);
 			frame.add(BackgroundImageForStartMenu);
 		}  catch (IOException e) {
 			e.printStackTrace();
 		}
-		frame.add(startMenuButton);
+//		frame.add(startMenuButton);
+		frame.add(player1Button);
+		frame.add(player2Button);
 		frame.setVisible(true);
+
 
 	}
 
@@ -114,9 +191,15 @@ public class MainWindow extends JPanel{ //implements Runnable {
 		
 		//Both these calls could be setup as a thread, but we want to simplify the game logic for you.
 		//score update  
-		frame.setTitle("Score =  " + gameWorld.getScore());
+//		frame.setTitle("Player 1 Score =  " + gameWorld.getScore() + "; Player 2 Score =  " + gameWorld.getScore2());
+
+
+
 
 	}
+
+
+
 
 
 //	Thread gameThread;

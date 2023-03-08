@@ -1,3 +1,9 @@
+/*
+ * Name: Chih-Yu Huang
+ * Student number: 22209269
+ *
+ * */
+
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -8,17 +14,15 @@ import java.util.HashMap;
 //Singeton pattern
 public class Controller implements KeyListener {
 
-	Sound sound = new Sound();
-
 	// player 1
 	private static boolean KeyAPressed = false;
 	private static boolean KeySPressed = false;
 	private static boolean KeyDPressed = false;
 	private static boolean KeyWPressed = false;
 	private static boolean KeyFPressed = false;
+	private static boolean KeyVPressed = false;
 	private static boolean KeySpacePressed = false;
 
-	private static boolean shootSound = false;
 
 	// player 2
 	private static boolean KeyJPressed = false;
@@ -26,6 +30,7 @@ public class Controller implements KeyListener {
 	private static boolean KeyLPressed = false;
 	private static boolean KeyIPressed = false;
 	private static boolean KeyHPressed = false;
+	private static boolean KeyBPressed = false;
 	private static boolean KeyNPressed = false;
 
 	private static final Controller instance = new Controller();
@@ -66,10 +71,12 @@ public class Controller implements KeyListener {
 				break;
 			case ' ':
 				setKeySpacePressed(true);
-				setShootSound(true);
 				break;
 			case 'f':
 				setKeyFPressed(true);
+				break;
+			case 'v':
+				setKeyVPressed(true);
 				break;
 
 
@@ -91,6 +98,9 @@ public class Controller implements KeyListener {
 				break;
 			case 'h':
 				setKeyHPressed(true);
+				break;
+			case 'b':
+				setKeyBPressed(true);
 				break;
 
 			default:
@@ -119,9 +129,11 @@ public class Controller implements KeyListener {
 			case 'f':
 				setKeyFPressed(false);
 				break;
+			case 'v':
+				setKeyVPressed(false);
+				break;
 			case ' ':
 				setKeySpacePressed(false);
-				setShootSound(false);
 				break;
 
 			// player 2
@@ -142,6 +154,9 @@ public class Controller implements KeyListener {
 				break;
 			case 'h':
 				setKeyHPressed(false);
+				break;
+			case 'b':
+				setKeyBPressed(false);
 				break;
 
 			default:
@@ -244,12 +259,19 @@ public class Controller implements KeyListener {
 		KeyHPressed = keyHPressed;
 	}
 
-	public boolean getShootSound() {
-		return shootSound;
+
+	public boolean isKeyVPressed() {
+		return KeyVPressed;
 	}
-	public void setShootSound(boolean shootSound){
-		this.shootSound = shootSound;
+	public void setKeyVPressed(boolean keyVPressed) {
+		KeyVPressed = keyVPressed;
 	}
 
+	public boolean isKeyBPressed() {
+		return KeyBPressed;
+	}
+	public void setKeyBPressed(boolean keyBPressed) {
+		KeyBPressed = keyBPressed;
+	}
 
 }

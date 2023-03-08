@@ -1,4 +1,10 @@
-import java.io.IOException;
+
+/*
+ * Name: Chih-Yu Huang
+ * Student number: 22209269
+ *
+ * */
+
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -9,15 +15,14 @@ import util.Vector3f;
 
 public class Model {
 
+	private Controller controller = Controller.getInstance();
+	private Sound sound = new Sound();
 
+
+	Random random = new Random();
+	// game object
 	private GameObject Player;
 	private GameObject Player2;
-
-	private Controller controller = Controller.getInstance();
-
-
-
-
 	private CopyOnWriteArrayList<GameObject> PlayerList = new CopyOnWriteArrayList<GameObject>();
 	private CopyOnWriteArrayList<GameObject> EnemiesList = new CopyOnWriteArrayList<GameObject>();
 	private CopyOnWriteArrayList<GameObject> EnemiesList2 = new CopyOnWriteArrayList<GameObject>();
@@ -28,8 +33,16 @@ public class Model {
 	private CopyOnWriteArrayList<GameObject> NetList2 = new CopyOnWriteArrayList<GameObject>();
 	private CopyOnWriteArrayList<GameObject> LivesList = new CopyOnWriteArrayList<GameObject>();
 	private CopyOnWriteArrayList<GameObject> LivesList2 = new CopyOnWriteArrayList<GameObject>();
-
 	private CopyOnWriteArrayList<GameObject> RescueList = new CopyOnWriteArrayList<GameObject>();
+
+
+	// variable for objects
+	float enemySpeedX = 1.0F;
+	float animalSpeedY = -1.0F;
+	float bulletSpeedX = -1.0F;
+	float netSpeedX = 0.0F;
+	float netSpeedY = 0.5F;
+	float playerSpeed = 2.0F ;
 
 
 	private int Score = 0;
@@ -38,111 +51,238 @@ public class Model {
 	private int life1 = 3;
 	private int life2 = 3;
 
-	int rescue = 0;
+	private int rescue = 0;
+
 
 	private static int numPlayer;
-
-	private static int level = 1;
-
+	private static int level = 0;
 	private boolean gameOver;
 	private boolean gameStart = true;
 
-	public float player1X = 500;
-	public float player1Y = 500;
+	private int levelMusic = 0;
 
-	public float player2X = 500;
-	public float player2Y = 200;
 
-	Sound sound = new Sound();
+	private float player1X = 500;
+	private float player1Y = 500;
+
+	private float player2X = 500;
+	private float player2Y = 200;
+
+	private int enemySize1 = 3;
+	private int enemySize2 = 4;
+
 
 
 
 
 	public Model() {
+		if(isGameStart()) {
 
-		Player = new GameObject("res/mini_sub.png",64,64, new Point3f(getPlayer1X(), player1Y,0));
-		Player2 = new GameObject("res/player.png",64,64, new Point3f(player2X, player2Y,0));
-		PlayerList.add(Player);
-		PlayerList.add(Player2);
-
-
-		sound.loadSound("start", "sound/start.wav");
-		sound.loadSound("game", "sound/game.wav");
-		sound.loadSound("shoot", "sound/alienshoot1.wav");
-//		Thread startSound = new Thread(new SoundPlayer(sound, "start"));
-//		startSound.start();
-//		playMusic(0);
+			Player = new GameObject("res/mini_sub.png", 64, 64, new Point3f(getPlayer1X(), getPlayer1Y(), 0));
+			Player2 = new GameObject("res/player.png", 64, 64, new Point3f(getPlayer2X(), getPlayer2Y(), 0));
+			PlayerList.add(Player);
+			PlayerList.add(Player2);
 
 
-		//Enemies  starting with four
-		EnemiesList.add(new GameObject("res/shark.png",64,64,new Point3f(0, ((float)Math.random() * 700 + 50 ),0)));
-		EnemiesList.add(new GameObject("res/shark.png",64,64,new Point3f(0, ((float)Math.random() * 700 + 50 ),0)));
-		EnemiesList.add(new GameObject("res/shark.png",64,64,new Point3f(0, ((float)Math.random() * 700 + 50 ),0)));
+			sound.loadSound("start", "sound/start.wav");
 
-		EnemiesList2.add(new GameObject("res/jellyfish.png",48,48,new Point3f(0, ((float)Math.random() * 700 + 50 ),0)));
-		EnemiesList2.add(new GameObject("res/jellyfish.png",48,48,new Point3f(0, ((float)Math.random() * 700 + 50 ),0)));
-		EnemiesList2.add(new GameObject("res/jellyfish.png",48,48,new Point3f(0, ((float)Math.random() * 700 + 50 ),0)));
-
-		LivesList.add(new GameObject("res/player2.png",48,48, new Point3f(10, 15,0)) );
-		LivesList.add(new GameObject("res/heart.png", 48, 48, new Point3f(60, 10 ,0) ));
-		LivesList.add(new GameObject("res/heart.png", 48, 48, new Point3f(108, 10 ,0) ));
-		LivesList.add(new GameObject("res/heart.png", 48, 48, new Point3f(108 + 48, 10 ,0) ));
+			sound.loadSound("shoot", "sound/shoot.wav");
+			sound.loadSound("hit", "sound/hit.wav");
+			sound.loadSound("enemy_player", "sound/enemy_player.wav");
+			sound.loadSound("saving", "sound/saving.wav");
+			sound.loadSound("throw", "sound/throw.wav");
+			sound.loadSound("catch", "sound/catch.wav");
+			sound.loadSound("gameOverSound", "sound/gameOver.wav");
+			sound.loadSound("bgm1", "sound/bgm1.wav");
+			sound.loadSound("bgm2", "sound/bgm2.wav");
 
 
-		LivesList2.add(new GameObject("res/player1.png",48,48, new Point3f(950, 15,0)) );
-		LivesList2.add(new GameObject("res/heart.png", 48, 48, new Point3f(1004, 10 ,0) ));
-		LivesList2.add(new GameObject("res/heart.png", 48, 48, new Point3f(1052, 10 ,0) ));
-		LivesList2.add(new GameObject("res/heart.png", 48, 48, new Point3f(1100, 10 ,0) ));
+
+
+
+
+			//Enemies  starting with four
+			EnemiesList.add(new GameObject("res/shark.png", 64, 64, new Point3f(0, ((float)  random.nextInt(12) * 50 + 100), 0)));
+			EnemiesList.add(new GameObject("res/shark.png", 64, 64, new Point3f(0, ((float)  random.nextInt(12) * 50 + 100), 0)));
+			EnemiesList.add(new GameObject("res/shark.png", 64, 64, new Point3f(0, ((float)  random.nextInt(12) * 50 + 100), 0)));
+
+			EnemiesList2.add(new GameObject("res/jellyfish.png", 48, 48, new Point3f(0, ((float)  random.nextInt(12) * 50 + 100), 0)));
+			EnemiesList2.add(new GameObject("res/jellyfish.png", 48, 48, new Point3f(0, ((float)  random.nextInt(12) * 50 + 100), 0)));
+			EnemiesList2.add(new GameObject("res/jellyfish.png", 48, 48, new Point3f(0, ((float)  random.nextInt(12) * 50 + 100), 0)));
+
+			LivesList.add(new GameObject("res/player2.png", 48, 48, new Point3f(10, 15, 0)));
+			LivesList.add(new GameObject("res/heart.png", 48, 48, new Point3f(60, 10, 0)));
+			LivesList.add(new GameObject("res/heart.png", 48, 48, new Point3f(108, 10, 0)));
+			LivesList.add(new GameObject("res/heart.png", 48, 48, new Point3f(108 + 48, 10, 0)));
+
+
+			LivesList2.add(new GameObject("res/player1.png", 48, 48, new Point3f(950, 15, 0)));
+			LivesList2.add(new GameObject("res/heart.png", 48, 48, new Point3f(1004, 10, 0)));
+			LivesList2.add(new GameObject("res/heart.png", 48, 48, new Point3f(1052, 10, 0)));
+			LivesList2.add(new GameObject("res/heart.png", 48, 48, new Point3f(1100, 10, 0)));
+		}
+
+
+		startSound.start();
+
+
 	}
 
+	Thread startSound = new Thread(new SoundPlayer(sound, "start"));
+	Thread bgmSound1 = new Thread(new SoundPlayer(sound, "bgm1"));
+	Thread bgmSound2 = new Thread(new SoundPlayer(sound, "bgm2"));
+	Thread gameOverSound = new Thread(new SoundPlayer(sound, "gameOver"));
+
+
+	public void music(){
+
+		if(getLevelMusic() == 1){
+			System.out.println("level 1");
+			bgmSound1.start();
+			setLevelMusic(100);
+		} else if (getLevelMusic() == 2) {
+			System.out.println("level 2");
+			bgmSound2.start();
+			setLevelMusic(100);
+		} else if (getLevelMusic() == 3) {
+			System.out.println("game over");
+			gameOverSound.start();
+			setLevelMusic(100);
+		}
+	}
+
+
+
+	public void setting() {
+
+//		if(isGameStart()) {
+//
+//
+//			Player = new GameObject("res/mini_sub.png", 64, 64, new Point3f(getPlayer1X(), getPlayer1Y(), 0));
+//			Player2 = new GameObject("res/player.png", 64, 64, new Point3f(getPlayer2X(), getPlayer2Y(), 0));
+//			PlayerList.add(Player);
+//			PlayerList.add(Player2);
+//
+//
+//			sound.loadSound("start", "sound/start.wav");
+//
+//			sound.loadSound("shoot", "sound/shoot.wav");
+//			sound.loadSound("hit", "sound/hit.wav");
+//			sound.loadSound("enemy_player", "sound/enemy_player.wav");
+//			sound.loadSound("saving", "sound/saving.wav");
+//			sound.loadSound("throw", "sound/throw.wav");
+//			sound.loadSound("catch", "sound/catch.wav");
+//			sound.loadSound("levelUp", "sound/levelUp.wav");
+//			sound.loadSound("gameOver", "sound/gameOver.wav");
+//
+//
+//			sound.loadSound("bgm1", "sound/bgm1.wav");
+//			sound.loadSound("bgm2", "sound/bgm2.wav");
+//
+//			sound.loadSound("death", "sound/death.wav");
+//			sound.loadSound("loseLife", "sound/loselife.wav");
+//
+//
+//			Thread startSound = new Thread(new SoundPlayer(sound, "start"));
+//			Thread levelUpSound = new Thread(new SoundPlayer(sound, "levelUp"));
+//
+//
+//			startSound.start();
+//
+//
+//			Thread bgmSound1 = new Thread(new SoundPlayer(sound, "bgm1"));
+//			Thread bgmSound2 = new Thread(new SoundPlayer(sound, "bgm2"));
+//
+////			bgmSound1.start();
+//
+//			if(getLevel() == 1){
+//				System.out.println("level 1");
+//				bgmSound1.start();
+//			} else if (getLevel() == 2) {
+//				bgmSound2.start();
+//			}
+//
+//
+//			//Enemies  starting with four
+//			EnemiesList.add(new GameObject("res/shark.png", 64, 64, new Point3f(0, ((float) Math.random() * 700 + 50), 0)));
+//			EnemiesList.add(new GameObject("res/shark.png", 64, 64, new Point3f(0, ((float) Math.random() * 700 + 50), 0)));
+//			EnemiesList.add(new GameObject("res/shark.png", 64, 64, new Point3f(0, ((float) Math.random() * 700 + 50), 0)));
+//
+//			EnemiesList2.add(new GameObject("res/jellyfish.png", 48, 48, new Point3f(0, ((float) Math.random() * 700 + 50), 0)));
+//			EnemiesList2.add(new GameObject("res/jellyfish.png", 48, 48, new Point3f(0, ((float) Math.random() * 700 + 50), 0)));
+//			EnemiesList2.add(new GameObject("res/jellyfish.png", 48, 48, new Point3f(0, ((float) Math.random() * 700 + 50), 0)));
+//
+//			LivesList.add(new GameObject("res/player2.png", 48, 48, new Point3f(10, 15, 0)));
+//			LivesList.add(new GameObject("res/heart.png", 48, 48, new Point3f(60, 10, 0)));
+//			LivesList.add(new GameObject("res/heart.png", 48, 48, new Point3f(108, 10, 0)));
+//			LivesList.add(new GameObject("res/heart.png", 48, 48, new Point3f(108 + 48, 10, 0)));
+//
+//
+//			LivesList2.add(new GameObject("res/player1.png", 48, 48, new Point3f(950, 15, 0)));
+//			LivesList2.add(new GameObject("res/heart.png", 48, 48, new Point3f(1004, 10, 0)));
+//			LivesList2.add(new GameObject("res/heart.png", 48, 48, new Point3f(1052, 10, 0)));
+//			LivesList2.add(new GameObject("res/heart.png", 48, 48, new Point3f(1100, 10, 0)));
+//		}
+	}
 
 	
 	// This is the heart of the game , where the model takes in all the inputs ,
 	// decides the outcomes and then changes the model accordingly.
 	public void update() {
-
 		playerLogic(); // Player Logic first
 		enemyLogic(); // Enemy Logic next
 //		bulletLogic(); // Bullets move next
 //		gameLogic(); // interactions between objects
 //		bulletLogic2();
-		gameOver();
 
 		gameLogic1(EnemiesList);
 		gameLogic1(EnemiesList2);
 		bulletLogic(BulletList);
 		bulletLogic(BulletList2);
 
-		netLogic2(NetList);
-		netLogic2(NetList2);
+		netLogic(NetList);
+		netLogic(NetList2);
 		animalLogic();
 
 		nextLevel();
+		gameOver();
 
-
-
-	}
-
-	public void level2Setting() {
-		//setup level 2
+		music();
 
 	}
 
 
 	// unsolved
 	public void clearData(){
+		PlayerList.clear();
+		LivesList.clear();
+		LivesList2.clear();
 		EnemiesList.clear();
+		EnemiesList2.clear();
 		BulletList.clear();
 		BulletList2.clear();
+		NetList.clear();
+		NetList2.clear();
+		AnimalsList.clear();
+		RescueList.clear();
+
+
 		setLife1(3);
 		setLife2(3);
 		setScore(0);
 		setScore2(0);
 		setNumPlayer(0);
+		setPlayer1X(500);
+		setPlayer2X(500);
+		setPlayer1Y(500);
+		setPlayer2Y(200);
+		setRescue(0);
 		setGameOver(false);
 
-//		MainWindow.score1Label.setVisible(false);
-//		MainWindow.score2Label.setVisible(false);
+		System.out.println("clearrrr");
+		MainWindow.score1Label.setVisible(true);
+		MainWindow.score2Label.setVisible(true);
+		setting();
 	}
 
 //	public void playMusic(int i){
@@ -164,46 +304,72 @@ public class Model {
 
 	private void gameLogic1(CopyOnWriteArrayList<GameObject> list) {
 
+		Thread hitSound = new Thread(new SoundPlayer(sound, "hit"));
+		Thread enemy_playerSound = new Thread(new SoundPlayer(sound, "enemy_player"));
+
+		Thread savingSound = new Thread(new SoundPlayer(sound, "saving"));
+
+		Thread catchSound = new Thread(new SoundPlayer(sound, "catch"));
+
+		Thread gameOverSound = new Thread(new SoundPlayer(sound, "gameOver"));
+
+
 		for (GameObject temp : list) {
 
-			// collide with bullet
+			// bullet hits enemy
 			for (GameObject Bullet : BulletList) {
 				if ( Math.abs(temp.getCentre().getX()- Bullet.getCentre().getX())< temp.getWidth()
 						&& Math.abs(temp.getCentre().getY()- Bullet.getCentre().getY()) < temp.getHeight()) {
 					list.remove(temp);
 					BulletList.remove(Bullet);
 					Score++;
-					System.out.println("1: " + Score);
+//					System.out.println("1: " + Score);
+					hitSound.start();
 				}
 			}
 
-			// collide with net
+			// net catches enemy
 			for (GameObject Net : NetList) {
 				if ( Math.abs(temp.getCentre().getX()- Net.getCentre().getX())< temp.getWidth()
 						&& Math.abs(temp.getCentre().getY()- Net.getCentre().getY()) < temp.getHeight()) {
 					list.remove(temp);
 					NetList.remove(Net);
 					Score = Score + 2;
-					System.out.println("1: +2  		 " + Score );
+//					System.out.println("1: +2  		 " + Score );
+					catchSound.start();
 				}
 			}
 
-			// collide with player
+			// enemy eats player
 			if(Math.abs(temp.getCentre().getX()- Player.getCentre().getX())< temp.getWidth()
 					&& Math.abs(temp.getCentre().getY()- Player.getCentre().getY()) < temp.getHeight()){
 				list.remove(temp);
 				life1--;
-
 				for(int i = getLife1(); i < LivesList.size() - 1; i++){
 					LivesList.remove(i + 1);
 				}
+				if (life1 <= 0){
+					setGameOver(true);
+					setGameStart(false);
+				}
+				enemy_playerSound.start();
+			}
 
-				System.out.println("1 life: " + life1);
+			// enemy eats animal -> gameOver sound
+			for (GameObject Animal : AnimalsList) {
+				if ( Math.abs(temp.getCentre().getX()- Animal.getCentre().getX())< temp.getWidth()
+						&& Math.abs(temp.getCentre().getY()- Animal.getCentre().getY()) < temp.getHeight()) {
+					list.remove(temp);
+					AnimalsList.remove(Animal);
+					setGameOver(true);
+					gameOverSound.start();
+				}
 			}
 
 			// only when there are 2 players
 			if(getNumPlayer() == 2) {
 
+				// bullet hits enemy
 				for (GameObject Bullet : BulletList2) {
 					if ( Math.abs(temp.getCentre().getX()- Bullet.getCentre().getX())< temp.getWidth()
 							&& Math.abs(temp.getCentre().getY()- Bullet.getCentre().getY()) < temp.getHeight()) {
@@ -211,9 +377,11 @@ public class Model {
 						BulletList2.remove(Bullet);
 						Score2++;
 						System.out.println("2: " + Score2);
+						hitSound.start();
 					}
 				}
 
+				// net catches enemy
 				for (GameObject Net : NetList2) {
 					if ( Math.abs(temp.getCentre().getX()- Net.getCentre().getX())< temp.getWidth()
 							&& Math.abs(temp.getCentre().getY()- Net.getCentre().getY()) < temp.getHeight()) {
@@ -221,42 +389,41 @@ public class Model {
 						NetList2.remove(Net);
 						Score2 = Score2 + 2;
 						System.out.println("1: +2  		 " + Score );
+						catchSound.start();
 					}
 				}
 
-				for (GameObject Net : AnimalsList) {
-					if ( Math.abs(temp.getCentre().getX()- Net.getCentre().getX())< temp.getWidth()
-							&& Math.abs(temp.getCentre().getY()- Net.getCentre().getY()) < temp.getHeight()) {
-						list.remove(temp);
-						AnimalsList.remove(Net);
-						setGameOver(true);
-					}
-				}
-
+				// enemy eats player2
 				if(Math.abs(temp.getCentre().getX()- Player2.getCentre().getX())< temp.getWidth()
 						&& Math.abs(temp.getCentre().getY()- Player2.getCentre().getY()) < temp.getHeight()){
 					list.remove(temp);
 					life2 = life2 - 1;
-
 					for(int i = getLife2(); i < LivesList2.size() - 1; i++){
 						LivesList2.remove(i + 1);
 					}
-					System.out.println("2 life: " + life2);
+					if (life2 <= 0){
+						setGameOver(true);
+						setGameStart(false);
+					}
+					enemy_playerSound.start();
+
 				}
 			}
 		}
 
 
+		// player saves animal
 		for (GameObject temp : AnimalsList) {
 			if (getNumPlayer() == 1) {
 				if (Math.abs(temp.getCentre().getX() - Player.getCentre().getX()) < temp.getWidth()
 						&& Math.abs(temp.getCentre().getY() - Player.getCentre().getY()) < temp.getHeight()) {
 					AnimalsList.remove(temp);
 					rescue++;
-					System.out.println("r: " + rescue);
+//					System.out.println("r: " + rescue);
 					for (int i = 0; i < rescue; i++) {
 						RescueList.add(new GameObject("res/fox.png", 30, 30, new Point3f(500 + 30 * i, 50, 0)));
 					}
+					savingSound.start();
 				}
 			}
 			if (getNumPlayer() == 2) {
@@ -270,6 +437,7 @@ public class Model {
 					for (int i = 0; i < rescue; i++) {
 						RescueList.add(new GameObject("res/fox.png", 30, 30, new Point3f(500 + 30 * i, 50, 0)));
 					}
+					savingSound.start();
 				}
 			}
 		}
@@ -389,10 +557,9 @@ public class Model {
 
 	private void enemyLogic() {
 		// TODO Auto-generated method stub
-		float speed = 1.0F;
 		for (GameObject temp : EnemiesList) {
 		    // Move enemies
-			temp.getCentre().ApplyVector(new Vector3f(speed,0,0));
+			temp.getCentre().ApplyVector(new Vector3f(enemySpeedX,0,0));
 
 			//see if they get to the top of the screen ( remember 0 is the top 
 			if (temp.getCentre().getX() == 1100.0f) {  // current boundary need to pass value to model
@@ -404,7 +571,7 @@ public class Model {
 		}
 
 		for (GameObject temp : EnemiesList2) {
-			temp.getCentre().ApplyVector(new Vector3f(speed,0,0));
+			temp.getCentre().ApplyVector(new Vector3f(enemySpeedX,0,0));
 
 			if (temp.getCentre().getX() == 1100.0f) {
 				EnemiesList2.remove(temp);
@@ -425,31 +592,35 @@ public class Model {
 //			}
 //		}
 
-		int a = 3;
-		int b = 4;
 
-		if (EnemiesList.size() < a) {
-			while (EnemiesList.size() < b) {
-				EnemiesList.add(new GameObject("res/shark.png",64,64, new Point3f(0, ((float)Math.random() * 700 + 50),0)));
+		// set difficulty
+//		if(getLevel() == 2){
+//			enemySize2 = 6;
+//		}
+
+		if (EnemiesList.size() < enemySize1) {
+			while (EnemiesList.size() < enemySize2) {
+				EnemiesList.add(new GameObject("res/shark.png",64,64, new Point3f(0, ((float) random.nextInt(12) * 50 + 100),0)));
 			}
 		}
 
-		if (EnemiesList2.size() < a) {
-			while (EnemiesList2.size() < b) {
-				EnemiesList2.add(new GameObject("res/jellyfish.png",48,48, new Point3f(0, ((float)Math.random()* 700 + 50),0)));
+		if (EnemiesList2.size() < enemySize1) {
+			while (EnemiesList2.size() < enemySize2) {
+				EnemiesList2.add(new GameObject("res/jellyfish.png",48,48, new Point3f(0, ((float)Math.random()* 600 + 50),0)));
 			}
 		}
 
 	}
 
 	private void animalLogic() {
-
+		Thread gameOverSound = new Thread(new SoundPlayer(sound, "gameOver"));
 		for (GameObject temp : AnimalsList) {
 			// Move enemies
-			temp.getCentre().ApplyVector(new Vector3f(0, -1, 0));
+			temp.getCentre().ApplyVector(new Vector3f(0, animalSpeedY, 0));
 
-			if(temp.getCentre().getY() == 1150){
-				AnimalsList.remove(temp);
+			if(temp.getCentre().getY() == 750){
+				setGameOver(true);
+				gameOverSound.start();
 			}
 		}
 
@@ -464,10 +635,10 @@ public class Model {
 
 	private void bulletLogic(CopyOnWriteArrayList<GameObject> list) {
 		// move bullets 
-	  
+
 		for (GameObject temp : list) {
 		    //check to move them
-			temp.getCentre().ApplyVector(new Vector3f(-1,0,0));
+			temp.getCentre().ApplyVector(new Vector3f(bulletSpeedX,0,0));
 			//see if they hit anything 
 			
 			//see if they get to the top of the screen ( remember 0 is the top 
@@ -477,57 +648,13 @@ public class Model {
 		}
 	}
 
-//	private void bulletLogic() {
-//		// TODO Auto-generated method stub
-//		// move bullets
-//
-//		for (GameObject temp : BulletList) {
-//			//check to move them
-//
-//			temp.getCentre().ApplyVector(new Vector3f(-1,0,0));
-//			//see if they hit anything
-//
-//			//see if they get to the top of the screen ( remember 0 is the top
-//			if (temp.getCentre().getX() == 0) {
-//				BulletList.remove(temp);
-//			}
-//		}
-//	}
 
-	private void bulletLogic2 () {
-
-		for (GameObject temp : BulletList2) {
-			//check to move them
-
-			temp.getCentre().ApplyVector(new Vector3f(-1,0,0));
-			//see if they hit anything
-
-			//see if they get to the top of the screen ( remember 0 is the top
-			if (temp.getCentre().getX() == 0) {
-				BulletList2.remove(temp);
-			}
-		}
-	}
-
-//	private void netLogic() {
-//		for (GameObject temp : NetList) {
-//			//check to move them
-//
-//			temp.getCentre().ApplyVector(new Vector3f((float) -0.5,(float) 0.5,0));
-//			//see if they hit anything
-//
-//			//see if they get to the top of the screen ( remember 0 is the top
-//			if (temp.getCentre().getX() == 0) {
-//				NetList.remove(temp);
-//			}
-//		}
-//	}
-
-	private void netLogic2(CopyOnWriteArrayList<GameObject> list) {
+	private void netLogic(CopyOnWriteArrayList<GameObject> list) {
 		for (GameObject temp : list) {
 			//check to move them
 
-			temp.getCentre().ApplyVector(new Vector3f(0,(float) 0.5,0));
+
+			temp.getCentre().ApplyVector(new Vector3f( netSpeedX, netSpeedY,0));
 			//see if they hit anything
 
 			//see if they get to the top of the screen ( remember 0 is the top
@@ -537,66 +664,78 @@ public class Model {
 		}
 	}
 
-
-
 	private void playerLogic() {
 		// smoother animation is possible if we make a target position
 		// done but may try to change things for students
 		 
 		//check for movement and if you fired a bullet
 
-		int speed = 2;
+
+		Thread shootSound = new Thread(new SoundPlayer(sound, "shoot"));
+		Thread throwSound = new Thread(new SoundPlayer(sound, "throw"));
+
+
 		if(controller.isKeyAPressed()) {
-			Player.getCentre().ApplyVector( new Vector3f(-speed,0,0));
+			Player.getCentre().ApplyVector( new Vector3f(-playerSpeed,0,0));
 		}
 		
 		if(controller.isKeyDPressed()) {
-			Player.getCentre().ApplyVector( new Vector3f(speed,0,0));
+			Player.getCentre().ApplyVector( new Vector3f(playerSpeed,0,0));
 		}
 			
 		if(controller.isKeyWPressed()) {
-			Player.getCentre().ApplyVector( new Vector3f(0,speed,0));
+			Player.getCentre().ApplyVector( new Vector3f(0,playerSpeed,0));
 		}
 		
 		if(controller.isKeySPressed()) {
-			Player.getCentre().ApplyVector( new Vector3f(0,-speed,0));
+			Player.getCentre().ApplyVector( new Vector3f(0,-playerSpeed,0));
 		}
 
 		if(controller.isKeySpacePressed()) {
 			CreateBullet();
-//			if(controller.getShootSound()){
-//				Thread c = new Thread(new SoundPlayer(sound, "shoot"));
-//				c.start();
-//			}
+			shootSound.start();
 			controller.setKeySpacePressed(false);
 		}
 		if(controller.isKeyFPressed()) {
 			CreateNet(NetList, Player);
+			throwSound.start();
 			controller.setKeyFPressed(false);
+		}
+		if(controller.isKeyVPressed()) {
+			CreateNet(NetList, Player);
+			throwSound.start();
+			controller.setKeyVPressed(false);
 		}
 
 
 
 		if(controller.isKeyJPressed()) {
-			Player2.getCentre().ApplyVector( new Vector3f(-speed,0,0));
+			Player2.getCentre().ApplyVector( new Vector3f(-playerSpeed,0,0));
 		}
 		if(controller.isKeyLPressed()) {
-			Player2.getCentre().ApplyVector( new Vector3f(speed,0,0));
+			Player2.getCentre().ApplyVector( new Vector3f(playerSpeed,0,0));
 		}
 		if(controller.isKeyIPressed()) {
-			Player2.getCentre().ApplyVector( new Vector3f(0,speed,0));
+			Player2.getCentre().ApplyVector( new Vector3f(0,playerSpeed,0));
 		}
 		if(controller.isKeyKPressed()) {
-			Player2.getCentre().ApplyVector( new Vector3f(0,-speed,0));
+			Player2.getCentre().ApplyVector( new Vector3f(0,-playerSpeed,0));
 		}
 
 		if(controller.isKeyNPressed()) {
 			CreateBullet2();
+			shootSound.start();
 			controller.setKeyNPressed(false);
 		}
 		if(controller.isKeyHPressed()) {
 			CreateNet(NetList2, Player2);
+			throwSound.start();
 			controller.setKeyHPressed(false);
+		}
+		if(controller.isKeyBPressed()) {
+			CreateNet(NetList2, Player2);
+			throwSound.start();
+			controller.setKeyBPressed(false);
 		}
 
 //		if(Player.getCentre().getX() == 0.0f && gameStart){
@@ -612,31 +751,27 @@ public class Model {
 
 
 	public void nextLevel(){
-		if (getScore() >= 10 || getScore2() >= 10 ||
-				getLife1() <= 0 || getLife2() <= 0) {
-			setLevel(2);
+		if(getLevel() == 1) {
+			if (getScore() >= 10 || getScore2() >= 10) {
+				setLevel(2);
+				setLevelMusic(2);
+			}
 		}
-	}
-
-
-	public boolean winGame(){
-		if (rescue >= 3){
-			return true;
-		}
-		return false;
 	}
 
 
 	public void gameOver(){
-		if (getScore() >= 20 || getScore2() >= 20 ||
-				getLife1() <= 0 || getLife2() <= 0) {
+		if ( getLife1() <= 0 || getLife2() <= 0) {
 			gameOver = true;
 		}
 	}
 
-//	private void CreateLives(CopyOnWriteArrayList<GameObject> o){
-//		o.add(new GameObject("res/heart.png", 16, 16, )))
-//	}
+	public boolean isWinGame(){
+		if (getScore() >= 25 || getScore2() >= 25) {
+			return true;
+		}
+		return false;
+	}
 
 	private void CreateBullet() {
 		BulletList.add(new GameObject("res/mini_sub_bullet.png",36,36, new Point3f(Player.getCentre().getX(), Player.getCentre().getY(),0.0f)));
@@ -649,6 +784,8 @@ public class Model {
 	private void CreateNet(CopyOnWriteArrayList<GameObject> list, GameObject player) {
 		list.add(new GameObject("res/net.png",36,36, new Point3f(player.getCentre().getX(), player.getCentre().getY(),0.0f)));
 	}
+
+
 
 	public GameObject getPlayer() {
 		return Player;
@@ -739,12 +876,14 @@ public class Model {
 		return life2;
 	}
 
+
 	public void setPlayer1X(float x){
 		this.player1X = x;
 	}
 	public void setPlayer2X(float x){
 		this.player2X = x;
 	}
+
 
 	public float getPlayer1X() {
 		return player1X;
@@ -753,6 +892,23 @@ public class Model {
 		return player2X;
 	}
 
+	public void setPlayer1Y(float y){
+		this.player1Y = y;
+	}
+	public void setPlayer2Y(float y){
+		this.player2Y = y;
+	}
+
+
+	public float getPlayer1Y() {
+		return player1Y;
+	}
+	public float getPlayer2Y() {
+		return player2Y;
+	}
+
+
+
 	public void setGameOver(boolean gameOver){
 		this.gameOver = gameOver;
 	}
@@ -760,9 +916,22 @@ public class Model {
 		return gameOver;
 	}
 
+	public void setRescue(int r){
+		 this.rescue = r;
+	}
+
 	public int getRescue(){
 		return rescue;
 	}
+
+	public void setLevelMusic(int n){
+		this.levelMusic = n;
+	}
+
+	public int getLevelMusic(){
+		return levelMusic;
+	}
+
 
 	public void setGameStart(boolean s) {
 		this.gameStart = s;
@@ -771,8 +940,7 @@ public class Model {
 		return gameStart;
 	}
 	public void updateLabel1(){
-		updateScore(Score);
-//		updateLive1(life1);
+		updateScore1(Score);
 	}
 
 	public void updateLabel2(){
@@ -780,11 +948,15 @@ public class Model {
 //		updateLive2(life2);
 	}
 
-	private void updateScore(int score){
+	public void updateScore1(int score){
 		MainWindow.score1Label.setText("Player 1 score: " + score);
 	}
-	private void updateScore2(int score2){
+	public void updateScore2(int score2){
 		MainWindow.score2Label.setText("Player 2 score: " + score2);
+	}
+
+	public void updateTitle(int n){
+		MainWindow.frame.setTitle("Undersea Rescue - LEVEL " + n);
 	}
 
 //	public void updateLive1(int life1){

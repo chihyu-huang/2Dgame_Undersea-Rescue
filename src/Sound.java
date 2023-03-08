@@ -1,3 +1,9 @@
+/*
+ * Name: Chih-Yu Huang
+ * Student number: 22209269
+ *
+ * */
+
 import javax.sound.sampled.*;
 import java.io.*;
 import java.net.URL;
@@ -61,6 +67,14 @@ public class Sound {
             clip.stop();
             clip.setFramePosition(0);
             clip.start();
+        }
+    }
+
+    public void stopSound(String name){
+        Clip clip = sounds.get(name);
+        if (clip != null && clip.isRunning()) {
+            clip.stop();
+            clip.close();
         }
     }
 

@@ -1,3 +1,9 @@
+/*
+ * Name: Chih-Yu Huang
+ * Student number: 22209269
+ *
+ * */
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -49,17 +55,7 @@ public class GameOverView extends JPanel {
         super.paintComponent(g2);
 //        Graphics2D g = (Graphics2D) g2;
 
-        if(model1.isGameOver()){
-            drawBackground(g2);
-            System.out.println("lose");
-        } else if (model1.getRescue() >= 3) {
-            drawWinBackground(g2);
-            System.out.println("win");
-        }else
-        {
-            draw(g2);
-
-        }
+        drawBackground(g2);
 
     }
 

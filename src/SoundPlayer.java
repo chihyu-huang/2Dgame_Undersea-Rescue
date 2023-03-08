@@ -1,3 +1,9 @@
+/*
+ * Name: Chih-Yu Huang
+ * Student number: 22209269
+ *
+ * */
+
 
 
 public class SoundPlayer implements Runnable {
@@ -12,4 +18,10 @@ public class SoundPlayer implements Runnable {
     public void run() {
         soundManager.playSound(soundName);
     }
+
+    public void stop(){
+        soundManager.stopSound(soundName);
+    }
+
+
 }

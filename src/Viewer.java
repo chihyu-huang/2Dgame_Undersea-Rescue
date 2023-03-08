@@ -1,3 +1,10 @@
+/*
+ * Name: Chih-Yu Huang
+ * Student number: 22209269
+ *
+ * */
+
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +16,7 @@ import javax.swing.*;
 public class Viewer extends JPanel {
 	private long CurrentAnimationTime = 0;
 
-	Sound soundManager = new Sound();
+	Sound sound = new Sound();
 
 	static Model gameworld = new Model();
 	private static GameModel model = new GameModel();
@@ -19,9 +26,6 @@ public class Viewer extends JPanel {
 
 
 	static int numPlayer = gameworld.getNumPlayer();
-
-
-
 
 
 	public Viewer(Model World, int numPlayer) {
@@ -59,33 +63,41 @@ public class Viewer extends JPanel {
 		CurrentAnimationTime++; // runs animation time step
 //		System.out.println(CurrentAnimationTime);
 
+		Thread bgmSound1 = new Thread(new SoundPlayer(sound, "bgm1"));
+		Thread bgmSound2 = new Thread(new SoundPlayer(sound, "bgm2"));
 
 		//Draw background
 		if(gameworld.getLevel() == 1){
 			drawBackground(g);
+			bgmSound1.start();
 		}else if(gameworld.getLevel() == 2){
 			drawBackground2(g);
+			bgmSound2.start();
 		}
 
 		//Draw player Game Object
-
 		int x = (int) gameworld.getPlayer().getCentre().getX();
 		int y = (int) gameworld.getPlayer().getCentre().getY();
 		int width = (int) gameworld.getPlayer().getWidth();
 		int height = (int) gameworld.getPlayer().getHeight();
 		String texture = gameworld.getPlayer().getTexture();
 
-//		if(gameworld.isGameStart()){
+		int x2 = (int) gameworld.getPlayer2().getCentre().getX();
+		int y2 = (int) gameworld.getPlayer2().getCentre().getY();
+		int width2 = (int) gameworld.getPlayer2().getWidth();
+		int height2 = (int) gameworld.getPlayer2().getHeight();
+		String texture2 = gameworld.getPlayer2().getTexture();
+
+		if(gameworld.isGameStart()) {
+
 			drawPlayer(x, y, width, height, texture, g);
 
-			if(gameworld.getNumPlayer() == 2){
-				int x2 = (int) gameworld.getPlayer2().getCentre().getX();
-				int y2 = (int) gameworld.getPlayer2().getCentre().getY();
-				int width2 = (int) gameworld.getPlayer2().getWidth();
-				int height2 = (int) gameworld.getPlayer2().getHeight();
-				String texture2 = gameworld.getPlayer2().getTexture();
+			if (gameworld.getNumPlayer() == 2) {
+
 				drawPlayer2(x2, y2, width2, height2, texture2, g);
-				gameworld.updateLabel2();
+
+				gameworld.updateScore2(gameworld.getScore2());
+
 				gameworld.getBullets2().forEach((temp) -> {
 					drawBullet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(),
 							temp.getWidth(), temp.getHeight(), temp.getTexture(), g);
@@ -101,55 +113,60 @@ public class Viewer extends JPanel {
 
 			}
 //			gameworld.setGameStart(false);
-//		}
 
-		gameworld.updateLabel1();
+
+			gameworld.updateScore1(gameworld.getScore());
 
 //		if(gameworld.getLife1() == 3) {
 //			drawLives(0, 0, 16, 16, gameworld.getLives(), g);
 //		}
+			if(gameworld.getLevel() == 1){
+				gameworld.updateTitle(1);
+			}else if(gameworld.getLevel() == 2){
+				gameworld.updateTitle(2);
+			}
 
 
-		gameworld.getLives().forEach((temp) -> {
-			drawLives((int) temp.getCentre().getX(), (int) temp.getCentre().getY(),
-					temp.getWidth(), temp.getHeight(), temp.getTexture(), g);
-		});
+			gameworld.getLives().forEach((temp) -> {
+				drawLives((int) temp.getCentre().getX(), (int) temp.getCentre().getY(),
+						temp.getWidth(), temp.getHeight(), temp.getTexture(), g);
+			});
 
 
-		gameworld.getAnimals().forEach((temp) -> {
-			drawAnimal((int) temp.getCentre().getX(), (int) temp.getCentre().getY(),
-					temp.getWidth(), temp.getHeight(), temp.getTexture(), g);
-		});
+			gameworld.getAnimals().forEach((temp) -> {
+				drawAnimal((int) temp.getCentre().getX(), (int) temp.getCentre().getY(),
+						temp.getWidth(), temp.getHeight(), temp.getTexture(), g);
+			});
 
 
-		gameworld.getNets().forEach((temp) -> {
-			drawNet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(),
-					temp.getWidth(), temp.getHeight(), temp.getTexture(), g);
-		});
+			gameworld.getNets().forEach((temp) -> {
+				drawNet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(),
+						temp.getWidth(), temp.getHeight(), temp.getTexture(), g);
+			});
 
-		gameworld.getRescueList().forEach((temp) -> {
-			drawRescue((int) temp.getCentre().getX(), (int) temp.getCentre().getY(),
-					temp.getWidth(), temp.getHeight(), temp.getTexture(), g);
-		});
-
-
-		  
-		//Draw Bullets 
-		// change back 
-		gameworld.getBullets().forEach((temp) -> {
-			drawBullet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(),
-					temp.getWidth(), temp.getHeight(), temp.getTexture(), g);
-		});
+			gameworld.getRescueList().forEach((temp) -> {
+				drawRescue((int) temp.getCentre().getX(), (int) temp.getCentre().getY(),
+						temp.getWidth(), temp.getHeight(), temp.getTexture(), g);
+			});
 
 
-		//Draw Enemies   
-		gameworld.getEnemies().forEach((temp) -> {
-			drawEnemies((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (int) temp.getWidth(), (int) temp.getHeight(), temp.getTexture(), g);
-	    });
+			//Draw Bullets
+			// change back
+			gameworld.getBullets().forEach((temp) -> {
+				drawBullet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(),
+						temp.getWidth(), temp.getHeight(), temp.getTexture(), g);
+			});
 
-		gameworld.getEnemies2().forEach((temp) -> {
-			drawEnemies2((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (int) temp.getWidth(), (int) temp.getHeight(), temp.getTexture(), g);
-		});
+
+			//Draw Enemies
+			gameworld.getEnemies().forEach((temp) -> {
+				drawEnemies((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (int) temp.getWidth(), (int) temp.getHeight(), temp.getTexture(), g);
+			});
+
+			gameworld.getEnemies2().forEach((temp) -> {
+				drawEnemies2((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (int) temp.getWidth(), (int) temp.getHeight(), temp.getTexture(), g);
+			});
+		}
 	}
 
 	private void drawEnemies(int x, int y, int width, int height, String texture, Graphics g) {

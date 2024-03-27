@@ -26,16 +26,18 @@ Welcome to Undersea Rescue, a thrilling 2D game built with JavaFX. Dive into the
    ```bash
    git clone https://github.com/chihyu-huang/2Dgame_Undersea-Rescue.git
 2. Navigate to the project directory:
-  cd 2Dgame_Undersea-Rescue
+   ```bash
+   cd 2Dgame_Undersea-Rescue
 
-3. Run the game
-  java -jar UnderseaRescue.jar
+4. Run the game
+   ```bash
+   java -jar UnderseaRescue.jar
 
 
 ## How to Play:
-Use the arrow keys to navigate your submarine.
-Collect power-ups and rescue stranded sea creatures.
-Avoid obstacles and enemy submarines to progress through the levels.
+- Use the arrow keys to navigate your submarine.
+- Collect power-ups and rescue stranded sea creatures.
+- Avoid obstacles and enemy submarines to progress through the levels.
 
 
 Demo Video: https://youtu.be/QKECGuiUmX8

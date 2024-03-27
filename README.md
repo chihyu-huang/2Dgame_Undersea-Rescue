@@ -1,5 +1,4 @@
-
-- # Undersea Rescue: 2D JavaFX Game
+# Undersea Rescue: 2D JavaFX Game
 
 Welcome to Undersea Rescue, a thrilling 2D game built with JavaFX. Dive into the depths of the ocean and embark on an exciting rescue mission to save stranded sea creatures.
 
